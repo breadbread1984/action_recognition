@@ -11,8 +11,9 @@ def Unit3D(in_channels, out_channels, kernel_size = (1,1,1), strides = (1,1,1), 
     results = tf.keras.layers.Activation(activation)(results);
   return tf.keras.Model(inputs = inputs, outputs = results);
 
-def I3D(num_classes, drop_rate = 0.1):
-  inputs = tf.keras.Input((None,None,None,3));
+def I3D(num_classes, channels = 3, drop_rate = 0.1):
+  assert num_classes in [2,3]; # 3 for RGB, 2 for optical flow
+  inputs = tf.keras.Input((None,224,224, channels));
   results = Unit3D(inputs.shape[-1], 64, kernel_size = (7,7,7), strides = (2,2,2))(inputs);
   results = tf.keras.layers.MaxPool3D(pool_size = (1,3,3), strides = (1,2,2), padding = 'same')(results);
   results = Unit3D(results.shape[-1], 64, kernel_size = (1,1,1))(results);
@@ -116,8 +117,10 @@ def I3D(num_classes, drop_rate = 0.1):
   results = tf.keras.layers.AveragePooling3D(pool_size = (2,7,7), strides = (1,1,1), padding = 'valid')(results);
   results = tf.keras.layers.Dropout(drop_rate)(results);
   logits = Unit3D(results.shape[-1], num_classes, kernel_size = (1,1,1), activation = None, use_batch_norm = False, use_bias = True)(results);
-  print(logits.shape)
+  avg_logits = tf.keras.layers.Lambda(lambda x: tf.math.reduce_mean(tf.squeeze(x, axis = (2,3)), axis = 1))(logits); # avg_logits.shape = (batch, 100)
+  return tf.keras.Model(inputs = inputs, outputs = avg_logits);
 
 if __name__ == "__main__":
   inputs = tf.random.normal(shape = (4,64,224,224,3));
-  I3D(100);
+  outputs = I3D(100)(inputs);
+  print(outputs.shape);
