@@ -18,6 +18,9 @@ def GCN(channels, hidden_channels, dropout_rate = 0.1):
   results = GraphConvolution(hidden_channels, channels)([results, adj]); # x.shape = (batch, node num, channels)
   return tf.keras.Model(inputs = (inputs, adj), outputs = results);
 
+def RPN():
+  pass;
+
 def STRG():
   pass;
   
