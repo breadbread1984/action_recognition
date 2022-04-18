@@ -19,10 +19,10 @@ def GCN(channels, hidden_channels, dropout_rate = 0.1):
   return tf.keras.Model(inputs = (inputs, adj), outputs = results);
 
 def RPN():
-  pass;
+  # TODO
 
 def STRG():
-  pass;
+  # TODO
   
 if __name__ == "__main__":
   gcn = GCN(100,20);
