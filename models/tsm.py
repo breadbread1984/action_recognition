@@ -17,6 +17,7 @@ def TemporalShift(length, channels):
 def BottleNeck(length, in_channels, out_channels, stride = 1):
   inputs = tf.keras.Input((None, None, in_channels)); # inputs.shape = (batch * length, h, w, c)
   # 1) residual branch
+  # NOTE: call temporal shift in residual branch first
   shifted = TemporalShift(length, in_channels)(inputs);
   conv0 = tf.keras.layers.Conv2D(out_channels, kernel_size = (1,1), padding = 'same', use_bias = False)(shifted);
   conv0 = tf.keras.layers.BatchNormalization()(conv0);
@@ -43,6 +44,7 @@ def TemporalShiftModule(class_num, length, layers = 50):
   };
   filters = [64, 128, 256, 512];
   inputs = tf.keras.Input((length, 224, 224, 3)); # inputs.shape = (batch, length, h, w, c)
+  # NOTE: reshape video clip to batch of images
   results = tf.keras.layers.Lambda(lambda x: tf.reshape(x, (-1, tf.shape(x)[-3], tf.shape(x)[-2], tf.shape(x)[-1])))(inputs);
   # 1) resnet
   results = tf.keras.layers.Conv2D(64, kernel_size = (7,7), strides = (2,2), padding = 'same', use_bias = False)(results);
