@@ -172,7 +172,7 @@ def get_adjacent(keypoint_method = 'openpose', adj_method = 'uniform', max_hop =
 if __name__ == "__main__":
   A, node_num = get_adjacent('openpose', 'spatial');
   print(A, node_num);
-  stgcn = STGCN(10, 2048, A.shape[0], spatial_num = node_num);
-  inputs = tf.random.normal(shape = (4, 2, 300, node_num, 2048));
+  stgcn = STGCN(10, 3, A.shape[0], spatial_num = node_num);
+  inputs = tf.random.normal(shape = (4, 2, 300, node_num, 3));
   outputs = stgcn([inputs,A]);
   print(outputs.shape);
